@@ -1,0 +1,21 @@
+---
+application:
+  name: "cubebox-backend-site"
+  project: "cubebox-backend"
+  organization: "QoveryCommunity"
+databases:
+- type: "POSTGRESQL"
+  name: "app_pg"
+  version: "12"
+- type: "MONGODB"
+  name: "app_mongo"
+  version: "4.4"
+- type: "REDIS"
+  name: "app_redis"
+  version: "6"
+routers:
+- name: "main-cubebox-backend-site"
+  routes:
+  - application_name: "cubebox-backend-site"
+    paths:
+    - "/*"
