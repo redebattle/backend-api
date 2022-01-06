@@ -63,10 +63,10 @@ class SessionController {
         expires_date: refreshExpiracao,
       });
 
-      await LogsAccounts.create({
-        user_id: usuario.id,
-        ip: 'localhost',
-      });
+      // await LogsAccounts.create({
+      //   user_id: usuario.id,
+      //   ip: req.ipInfo,
+      // });
 
       await Queue.add(NewSessionMail.key, {
         usuario,
@@ -112,6 +112,7 @@ class SessionController {
       if (!userToken) {
         return res.status(404).json({ error: 'Refresh Token não existe.' });
       }
+      return res.status(400);
     } catch (e) {
       return res
         .status(400)
