@@ -46,7 +46,7 @@ class EncurtadorURLsController {
         for (let i = 0; i < 6; i++) {
           result += possibilidades.charAt(Math.floor(Math.random() * length));
         }
-        shortUrl = `${process.env.URL_ENCURTADOR}/${result}`;
+        shortUrl = `${process.env.URL_ENCURTADOR}${result}`;
 
         await Encurtador.create({
           original_url: url,
@@ -57,7 +57,7 @@ class EncurtadorURLsController {
       } else {
         const isExist = await Encurtador.findOne({ where: { slug } });
         if (!isExist) {
-          shortUrl = `${process.env.URL_ENCURTADOR}/${slug}`;
+          shortUrl = `${process.env.URL_ENCURTADOR}${slug}`;
           await Encurtador.create({
             original_url: url,
             short_url: shortUrl,
@@ -96,7 +96,7 @@ class EncurtadorURLsController {
     try {
       const isExist = await Encurtador.findOne({ where: { short_url: url } });
       if (!isExist) {
-        res.redirect('https://battlecraft.com.br');
+        res.redirect('https://redebattle.com.br');
       }
       await Encurtador.update(
         { acess: isExist.acess + 1 },
