@@ -1,6 +1,6 @@
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    return queryInterface.createTable('configuracoes', {
+  up: async (queryInterface, Sequelize) =>
+    queryInterface.createTable('configuracoes', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -18,6 +18,9 @@ module.exports = {
       manutencao: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
+      },
+      manutencao_mensagem: {
+        type: Sequelize.STRING,
       },
       server_ip: {
         type: Sequelize.STRING,
@@ -55,10 +58,7 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
       },
-    });
-  },
+    }),
 
-  down: async (queryInterface) => {
-    return queryInterface.dropTable('configuracoes');
-  },
+  down: async (queryInterface) => queryInterface.dropTable('configuracoes'),
 };
