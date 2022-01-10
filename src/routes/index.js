@@ -43,13 +43,13 @@ EncurtadorRoute(routes, authMiddleware, manutencaoMiddleware);
 ConfiguracoesRoute(routes, authMiddleware, manutencaoMiddleware);
 DashboardRoutes(routes, authMiddleware, manutencaoMiddleware);
 
-routes.get('*', (req, res) => {
-  return res.json({
-    title: 'CubeBoxAPI',
+routes.get('*', (req, res) =>
+  res.json({
+    title: 'BattleAPI',
     version: `${process.env.VERSION}`,
     status: 'OK',
     runtime_mode: `${process.env.NODE_ENV}`,
-  });
-});
+  })
+);
 
 export default routes;

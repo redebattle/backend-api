@@ -12,12 +12,14 @@ import validateUserCreate from '../../app/validators/User/UserCreate';
 import validateUserUpdate from '../../app/validators/User/UserUpdate';
 
 export default (routes, auth) => {
-  const bruteStore = new BruteRedis({
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-  });
+  if (process.env.NODE_ENV !== 'development') {
+    const bruteStore = new BruteRedis({
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT,
+    });
 
-  const bruteForce = new Brute(bruteStore);
+    const bruteForce = new Brute(bruteStore);
+  }
 
   routes.post(
     '/api/v1/auth/register',
