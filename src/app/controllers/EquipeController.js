@@ -103,7 +103,6 @@ class EquipeController {
           include: [
             {
               model: Cargo,
-              as: 'cargos',
             },
           ],
         }

@@ -22,7 +22,6 @@ class Equipes extends Model {
 
     this.belongsTo(models.Cargos, {
       foreignKey: 'cargo_id',
-
     });
   }
 }
