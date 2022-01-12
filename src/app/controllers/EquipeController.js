@@ -97,7 +97,7 @@ class EquipeController {
   async getCargoByMember(req, res) {
     const { nome } = req.params;
     try {
-      const cargo = await Cargo.findOne(
+      const member = await Equipe.findOne(
         { where: { nome } },
         {
           include: [
@@ -108,7 +108,7 @@ class EquipeController {
           ],
         }
       );
-      return res.json(cargo);
+      return res.json(member);
     } catch (e) {
       return res.status(400).json({
         error: 'Não foi possível listar os registros.',
