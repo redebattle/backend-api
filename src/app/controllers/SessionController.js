@@ -68,11 +68,11 @@ class SessionController {
       //   ip: req.ipInfo,
       // });
 
-      await Queue.add(NewSessionMail.key, {
-        usuario,
-        ipInfo,
-        horario,
-      });
+      // await Queue.add(NewSessionMail.key, {
+      //   usuario,
+      //   ipInfo,
+      //   horario,
+      // });
 
       return res.json({
         user: {

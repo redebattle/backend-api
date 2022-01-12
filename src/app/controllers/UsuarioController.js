@@ -145,7 +145,7 @@ class UsuarioController {
             }
 
             // eslint-disable-next-line no-unused-vars
-            await fs.unlink(folderDestination, function (err, data) {
+            await fs.unlink(folderDestination, (err, data) => {
               if (err) console.log(err);
             });
 

@@ -7,6 +7,7 @@ export default (routes, auth) => {
   routes.get('/api/v1/equipe/all', EquipeController.getAll);
   routes.get('/api/v1/equipe', EquipeController.getCargosByPosition);
   routes.get('/api/v1/equipe/count/:id', EquipeController.countMemberByCargo);
+  routes.get('/api/v1/equipe/member/:nome', EquipeController.getCargoByMember);
 
   // Routes Private
 

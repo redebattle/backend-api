@@ -94,6 +94,29 @@ class EquipeController {
     }
   }
 
+  async getCargoByMember(req, res) {
+    const { nome } = req.params;
+    try {
+      const cargo = await Cargo.findOne(
+        { where: { nome } },
+        {
+          include: [
+            {
+              model: Cargo,
+              as: 'cargos',
+            },
+          ],
+        }
+      );
+      return res.json(cargo);
+    } catch (e) {
+      return res.status(400).json({
+        error: 'Não foi possível listar os registros.',
+        message: e.message,
+      });
+    }
+  }
+
   async create(req, res) {
     const { nome, cargo_id } = req.body;
     try {
