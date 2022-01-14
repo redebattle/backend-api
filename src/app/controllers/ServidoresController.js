@@ -13,6 +13,19 @@ class ServidoresController {
     }
   }
 
+  async getByName(req, res) {
+    try {
+      const { nome } = req.query;
+      const data = await Servidores.findOne({ where: { nome } });
+      return res.json(data);
+    } catch (e) {
+      return res.status(400).json({
+        error: 'Não foi possível listar os registros.',
+        message: e.message,
+      });
+    }
+  }
+
   async create(req, res) {
     try {
       const { nome } = req.body;

@@ -4,6 +4,7 @@ import ServidoresController from '../../app/controllers/ServidoresController';
 export default (routes, auth) => {
   // Routes Public
   routes.get('/api/v1/servidores/all', ServidoresController.getAll);
+  routes.get('/api/v1/servidores', ServidoresController.getByName);
 
   // Routes Private
 
