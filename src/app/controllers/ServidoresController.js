@@ -1,3 +1,5 @@
+import { Op } from 'sequelize';
+
 import Servidores from '../models/Servidores';
 
 class ServidoresController {
@@ -16,7 +18,13 @@ class ServidoresController {
   async getByName(req, res) {
     try {
       const { nome } = req.query;
-      const data = await Servidores.findOne({ where: { nome } });
+      const data = await Servidores.findOne({
+        where: {
+          nome: {
+            [Op.iLike]: nome,
+          },
+        },
+      });
       return res.json(data);
     } catch (e) {
       return res.status(400).json({
