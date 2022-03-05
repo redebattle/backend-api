@@ -84,10 +84,10 @@ class SessionController {
         expires_date: refreshExpiracao,
       });
 
-      // await LogsAccounts.create({
-      //   user_id: usuario.id,
-      //   ip: req.ipInfo,
-      // });
+      await LogsAccounts.create({
+        user_id: usuario.id,
+        ip: req.ipInfo,
+      });
 
       // await Queue.add(NewSessionMail.key, {
       //   usuario,
@@ -106,6 +106,7 @@ class SessionController {
           expiresIn: authConfig.expiresIn,
         }),
         refresh_token: refreshToken,
+        responseRecaptcha,
       });
     } catch (e) {
       return res.status(400).json({

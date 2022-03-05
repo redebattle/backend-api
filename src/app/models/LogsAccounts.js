@@ -14,7 +14,7 @@ class LogsAccounts extends Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.Usuario, { foreignKey: 'user_id', as: 'usuarios' });
+    this.belongsTo(models.Usuario, { foreignKey: 'user_id', as: 'usuario' });
   }
 }
 
