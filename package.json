@@ -46,9 +46,9 @@
     "nodemailer-express-handlebars": "^4.0.0",
     "pg": "^8.7.1",
     "sequelize": "^6.12.5",
+    "sucrase": "^3.20.3",
     "youch": "^3.0.0",
-    "yup": "^0.32.11",
-    "sucrase": "^3.20.3"
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@sucrase/jest-plugin": "^2.2.0",

@@ -1,3 +1,6 @@
+import { response } from 'express';
+
+import axios from 'axios';
 import dateFormat from 'dateformat';
 import jwt from 'jsonwebtoken';
 
@@ -11,8 +14,26 @@ import Usuario from '../models/Usuario';
 
 class SessionController {
   async createSession(req, res) {
+    const secret = process.env.RECAPTCHA_SECRET_KEY;
     try {
-      const { email, senha } = req.body;
+      const { email, senha, recaptchaToken } = req.body;
+
+      const verifyHuman = await axios.get(
+        `https://google.com/recaptcha/api/siteverify?secret=${secret}&response=${recaptchaToken}`
+      );
+
+      const responseRecaptcha = verifyHuman.data;
+
+      if (
+        responseRecaptcha.success !== undefined &&
+        !responseRecaptcha.success
+      ) {
+        return res.status(401).json({
+          success: false,
+          message: 'Failed captcha verification',
+          data: responseRecaptcha,
+        });
+      }
 
       const usuario = await Usuario.findOne({
         where: { email },
