@@ -84,13 +84,13 @@ class SessionController {
         expires_date: refreshExpiracao,
       });
 
-      await LogsAccounts.create({
-        user_id: usuario.id,
-        ip:
-          req.header('x-forwarded-for') ||
-          req.connection.remoteAddress ||
-          req.ip,
-      });
+      // await LogsAccounts.create({
+      //   user_id: usuario.id,
+      //   ip:
+      //     req.header('x-forwarded-for') ||
+      //     req.connection.remoteAddress ||
+      //     req.ip,
+      // });
 
       // await Queue.add(NewSessionMail.key, {
       //   usuario,
