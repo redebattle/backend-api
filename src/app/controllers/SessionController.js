@@ -14,7 +14,6 @@ import Usuario from '../models/Usuario';
 
 class SessionController {
   async createSession(req, res) {
-    req.headers['x-forwarded-for'];
     const secret = process.env.RECAPTCHA_SECRET_KEY;
     try {
       const { email, senha, recaptchaToken } = req.body;
@@ -87,7 +86,10 @@ class SessionController {
 
       await LogsAccounts.create({
         user_id: usuario.id,
-        ip: req.ipInfo,
+        ip:
+          req.header('x-forwarded-for') ||
+          req.connection.remoteAddress ||
+          req.ip,
       });
 
       // await Queue.add(NewSessionMail.key, {
