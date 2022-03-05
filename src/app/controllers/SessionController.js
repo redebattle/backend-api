@@ -14,6 +14,7 @@ import Usuario from '../models/Usuario';
 
 class SessionController {
   async createSession(req, res) {
+    req.headers['x-forwarded-for'];
     const secret = process.env.RECAPTCHA_SECRET_KEY;
     try {
       const { email, senha, recaptchaToken } = req.body;
