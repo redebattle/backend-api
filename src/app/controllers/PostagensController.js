@@ -70,7 +70,7 @@ class PostagensController {
     const page = req.query.page ? req.query.page : 1;
     const quantityPage = req.query.itens ? req.query.itens : 20;
     let sort = req.query.sort ? req.query.sort : 'id';
-    let order = req.query.order ? req.query.order : 'asc';
+    let order = req.query.order ? req.query.order : 'desc';
     const sortValid = ['id', 'titulo', 'createdAt', 'updatedAt'];
     const orderValid = ['asc', 'desc'];
     const { autor } = req.params;
