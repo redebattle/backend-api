@@ -73,7 +73,7 @@ class PostagensController {
     let order = req.query.order ? req.query.order : 'asc';
     const sortValid = ['id', 'titulo', 'createdAt', 'updatedAt'];
     const orderValid = ['asc', 'desc'];
-    const { autor } = req.query;
+    const { autor } = req.params;
 
     try {
       if (!orderValid.includes(order)) {
