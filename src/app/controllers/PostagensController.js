@@ -84,8 +84,10 @@ class PostagensController {
         sort = 'id';
       }
 
+      const getAutor = await Usuario.findOne({ where: { nome: autor } });
+
       const post = await Postagens.findAndCountAll({
-        where: { visivel: true, created_by: autor },
+        where: { visivel: true, created_by: getAutor.id },
         offset: (page - 1) * quantityPage,
         limit: quantityPage,
         order: [[sort, order]],
