@@ -66,6 +66,66 @@ class PostagensController {
     }
   }
 
+  async getAuthroPosts(req, res) {
+    const page = req.query.page ? req.query.page : 1;
+    const quantityPage = req.query.itens ? req.query.itens : 20;
+    let sort = req.query.sort ? req.query.sort : 'id';
+    let order = req.query.order ? req.query.order : 'asc';
+    const sortValid = ['id', 'titulo', 'createdAt', 'updatedAt'];
+    const orderValid = ['asc', 'desc'];
+    const { autor } = req.query;
+
+    try {
+      if (!orderValid.includes(order)) {
+        order = 'asc';
+      }
+
+      if (!sortValid.includes(sort)) {
+        sort = 'id';
+      }
+
+      const post = await Postagens.findAndCountAll({
+        where: { visivel: true, created_by: autor },
+        offset: (page - 1) * quantityPage,
+        limit: quantityPage,
+        order: [[sort, order]],
+        attributes: {
+          exclude: ['categoria_id', 'autor_id', 'created_by'],
+        },
+        include: [
+          {
+            model: Categoria,
+            as: 'categoria',
+            attributes: ['id', 'descricao'],
+          },
+          {
+            model: Usuario,
+            as: 'autor',
+            attributes: ['id', 'nome', 'avatar_id'],
+          },
+        ],
+      });
+
+      res.header('X-Total-Count', post.count);
+      res.header('X-Sort', sort);
+      res.header('X-Order', order);
+
+      return res.json({
+        obs: post,
+        pagina: page,
+        quantidade: quantityPage,
+        total: post.count,
+        sort,
+        order,
+      });
+    } catch (e) {
+      return res.status(400).json({
+        error: 'Não foi possível listar as postagens',
+        message: e.message,
+      });
+    }
+  }
+
   async getPaginationAdmin(req, res) {
     const page = req.query.page ? req.query.page : 1;
     const quantityPage = req.query.itens ? req.query.itens : 20;

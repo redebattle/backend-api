@@ -15,6 +15,7 @@ export default (routes, auth) => {
   routes.get('/api/v1/postagens/:id', PostagensController.getIdIndex);
   routes.get('/api/v1/postagens', PostagensController.searchIndex);
   routes.get('/api/v1/postagens/slug/:slug', PostagensController.getSlugIndex);
+  routes.get('/api/v1/postagens/autor/', PostagensController.getAuthroPosts);
 
   // Routes Private
 
