@@ -3,17 +3,22 @@ import * as Yup from 'yup';
 export default async (req, res, next) => {
   try {
     const schema = Yup.object().shape({
-      nome: Yup.string(),
+      name: Yup.string(),
+      username: Yup.string(),
       email: Yup.string().email(),
       avatar_id: Yup.number().typeError('avatar_id deve ser um número'),
-      senhaantiga: Yup.string().min(6),
-      senha: Yup.string()
+      password: Yup.string().min(6),
+      new_password: Yup.string()
         .min(6)
-        .when('senhaantiga', (senhaantiga, field) =>
-          senhaantiga ? field.required() : field
+        .when('password', (password, field) =>
+          password ? field.required() : field
         ),
-      confirmarsenha: Yup.string().when('senha', (senha, field) =>
-        senha ? field.required().oneOf([Yup.ref('senha')]) : field
+      confirm_password: Yup.string().when(
+        'new_password',
+        (new_password, field) =>
+          new_password
+            ? field.required().oneOf([Yup.ref('new_password')])
+            : field
       ),
     });
 

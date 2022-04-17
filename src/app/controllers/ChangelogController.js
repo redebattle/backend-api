@@ -1,4 +1,6 @@
-import Changelog from '../models/Changelogs';
+import ChangelogCategories from '../models/ChangelogCategories';
+import ChangelogPosts from '../models/ChangelogPosts';
+import Users from '../models/Users';
 
 class ChangelogController {
   async getPagination(req, res) {
@@ -6,10 +8,10 @@ class ChangelogController {
     const quantityPage = req.query.itens ? req.query.itens : 20;
 
     try {
-      const total = await Changelog.count({ order: 'id' });
+      const total = await ChangelogPosts.count({ order: 'id' });
       res.header('X-Total-Count', total);
 
-      const changelog = await Changelog.findAll({
+      const changelog = await ChangelogPosts.findAll({
         offset: (page - 1) * quantityPage,
         limit: quantityPage,
         order: ['id'],
@@ -29,9 +31,42 @@ class ChangelogController {
     }
   }
 
+  async getAllCategories(req, res) {
+    try {
+      const categories = await ChangelogCategories.findAll({
+        where: { status: true },
+        order: [['position', 'asc']],
+      });
+      return res.json(categories);
+    } catch (e) {
+      return res.status(400).json({
+        error: 'Não foi possível listar os registros.',
+        message: e.message,
+      });
+    }
+  }
+
   async getAll(req, res) {
     try {
-      const changelog = await Changelog.findAll();
+      const changelog = await ChangelogPosts.findAll({
+        where: { status: true },
+
+        include: [
+          {
+            model: Users,
+            as: 'author',
+            attributes: ['name', 'username', 'avatar_id', 'is_verified'],
+          },
+          {
+            model: ChangelogCategories,
+            as: 'categories',
+            where: { status: true },
+            order: [['categories.position', 'asc']],
+            required: false,
+          },
+        ],
+      });
+
       return res.json(changelog);
     } catch (e) {
       return res.status(400).json({
@@ -44,7 +79,7 @@ class ChangelogController {
   async create(req, res) {
     const { titulo, topicos, categoria } = req.body;
     try {
-      const changelog = await Changelog.create({
+      const changelog = await ChangelogPosts.create({
         titulo,
         topicos,
         categoria,
@@ -61,7 +96,7 @@ class ChangelogController {
 
   async updateId(req, res) {
     try {
-      const changelog = await Changelog.findByPk(req.params.id);
+      const changelog = await ChangelogPosts.findByPk(req.params.id);
 
       if (!changelog) {
         return res
@@ -69,7 +104,7 @@ class ChangelogController {
           .json({ error: 'O cargo solicitado não foi encontrado.' });
       }
 
-      await Changelog.update(req.body);
+      await ChangelogPosts.update(req.body);
       return res.send();
     } catch (e) {
       return res.status(400).json({
@@ -81,13 +116,13 @@ class ChangelogController {
 
   async deleteId(req, res) {
     try {
-      const isExist = await Changelog.findByPk(req.params.id);
+      const isExist = await ChangelogPosts.findByPk(req.params.id);
       if (!isExist) {
         return res
           .status(400)
           .json({ error: 'O cargo solicitado não existe.' });
       }
-      await Changelog.destroy({
+      await ChangelogPosts.destroy({
         where: { id: req.params.id },
       });
       return res.json({ sucess: 'Cargo removido com sucesso!' });
@@ -101,7 +136,7 @@ class ChangelogController {
 
   async count(req, res) {
     try {
-      const count = await Changelog.count();
+      const count = await ChangelogPosts.count();
       console.log(count);
       return res.json(count);
     } catch (e) {

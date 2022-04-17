@@ -1,5 +1,5 @@
 import Produtos from '../models/Produtos';
-import Servidores from '../models/Servidores';
+import Servidores from '../models/Servers';
 
 class ProdutosController {
   async index(req, res) {

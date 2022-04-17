@@ -6,8 +6,8 @@ class Configuracoes extends Model {
       {
         site_name: Sequelize.STRING,
         site_desc: Sequelize.STRING,
-        manutencao: Sequelize.BOOLEAN,
-        manutencao_mensagem: Sequelize.STRING,
+        maintenance_mode: Sequelize.BOOLEAN,
+        maintenance_message: Sequelize.STRING,
         server_ip: Sequelize.STRING,
         server_port: Sequelize.STRING,
         discord_guild_id: Sequelize.STRING,
@@ -17,6 +17,7 @@ class Configuracoes extends Model {
         twitter_url: Sequelize.STRING,
       },
       {
+        tableName: 'settings',
         sequelize,
       }
     );

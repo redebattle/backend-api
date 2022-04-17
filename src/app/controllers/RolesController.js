@@ -1,7 +1,7 @@
 import Roles from '../models/Roles';
 import Uploads from '../models/Uploads';
 import UserRoles from '../models/UserRoles';
-import Usuario from '../models/Usuario';
+import Usuario from '../models/Users';
 
 class RolesController {
   async giveRoleUser(req, res) {

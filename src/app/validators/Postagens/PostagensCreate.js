@@ -3,16 +3,19 @@ import * as Yup from 'yup';
 export default async (req, res, next) => {
   try {
     const schema = Yup.object().shape({
-      titulo: Yup.string().required('O campo título é obrigatório.'),
-      conteudo: Yup.string().required('O campo conteúdo é obrigatório.'),
-      categoria: Yup.number()
-        .typeError('O campo categoria deve ser um número.')
-        .required('O campo categoria é obrigatório.'),
-      header: Yup.string().typeError(
+      title: Yup.string().required('O título é obrigatório.'),
+      content: Yup.string().required('O conteúdo é obrigatório.'),
+      category: Yup.number()
+        .typeError('A categoria deve ser um número.')
+        .required('A campo categoria é obrigatório.'),
+      banner_url: Yup.string().typeError(
         'O campo header deve ser uma URL de imagem.'
       ),
-      visivel: Yup.boolean().typeError('O campo visivel deve ser um Boolean.'),
-      acessos: Yup.number().typeError('O campo acesso deve ser um número.'),
+      link: Yup.string(),
+      active: Yup.boolean().typeError('O status deve ser um Boolean.'),
+      is_external: Yup.boolean().typeError('O status deve ser um Boolean.'),
+      allow_comments: Yup.boolean().typeError('O status deve ser um Boolean.'),
+      pinned: Yup.boolean().typeError('O status deve ser um Boolean.'),
     });
 
     await schema.validate(req.body, { abortEarly: false });

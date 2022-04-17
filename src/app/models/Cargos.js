@@ -16,9 +16,9 @@ class Cargos extends Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.Usuario, {
+    this.belongsTo(models.Users, {
       foreignKey: 'created_by',
-      as: 'autor',
+      as: 'author',
     });
   }
 }

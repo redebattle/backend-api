@@ -1,4 +1,4 @@
-import Postagens from '../models/Postagens';
+import Postagens from '../models/PostArticle';
 
 class DashboardController {
   async index(req, res) {

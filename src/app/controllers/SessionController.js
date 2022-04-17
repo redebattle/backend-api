@@ -7,41 +7,43 @@ import jwt from 'jsonwebtoken';
 import authConfig from '../../config/auth';
 import Queue from '../../lib/Queue';
 import NewSessionMail from '../jobs/NewSessionMail';
-import LogsAccounts from '../models/LogsAccounts';
+import Medals from '../models/Medals';
 import Uploads from '../models/Uploads';
-import UsersTokens from '../models/UsersTokens';
-import Usuario from '../models/Usuario';
+import Users from '../models/Users';
+import UsersSessionLogs from '../models/UsersSessionLogs';
 
 class SessionController {
   async createSession(req, res) {
     const secret = process.env.RECAPTCHA_SECRET_KEY;
     try {
-      const { email, senha, recaptchaToken } = req.body;
+      const { email, password, recaptcha_token } = req.body;
+      const { ipInfo } = req;
+      const horario = dateFormat(new Date(), 'dd/mm/yyyy "às" hh:MM:ss');
 
-      const verifyHuman = await axios.get(
-        `https://google.com/recaptcha/api/siteverify?secret=${secret}&response=${recaptchaToken}`
-      );
+      // const verifyHuman = await axios.get(
+      //   `https://google.com/recaptcha/api/siteverify?secret=${secret}&response=${recaptcha_token}`
+      // );
 
-      const responseRecaptcha = verifyHuman.data;
+      // const responseRecaptcha = verifyHuman.data;
 
-      if (
-        responseRecaptcha.success !== undefined &&
-        !responseRecaptcha.success
-      ) {
-        return res.status(401).json({
-          success: false,
-          message: 'Failed captcha verification',
-          data: responseRecaptcha,
-        });
-      }
+      // if (
+      //   responseRecaptcha.success !== undefined &&
+      //   !responseRecaptcha.success
+      // ) {
+      //   return res.status(401).json({
+      //     success: false,
+      //     message: 'Failed captcha verification',
+      //     data: responseRecaptcha,
+      //   });
+      // }
 
-      const usuario = await Usuario.findOne({
+      const usuario = await Users.findOne({
         where: { email },
         include: [
           {
             model: Uploads,
             as: 'avatar',
-            attributes: ['path', 'url', 'id', 'tipo'],
+            attributes: ['url'],
           },
         ],
       });
@@ -49,25 +51,26 @@ class SessionController {
       if (!usuario) {
         return res.status(401).json({
           status: 401,
+          success: false,
           type: 'Session.Accounts.Unauthorized.Session',
+          error: 'Ocorreu um erro durante a execução.',
           message: 'Email e/ou senha inválidos.',
           instance: '/api/v1/auth/login',
         });
       }
 
-      if (!(await usuario.checkPassword(senha))) {
+      if (!(await usuario.checkPassword(password))) {
         return res.status(401).json({
           status: 401,
+          success: false,
           type: 'Session.Accounts.Unauthorized.Session',
+          error: 'Ocorreu um erro durante a execução.',
           message: 'Email e/ou senha inválidos.',
           instance: '/api/v1/auth/login',
         });
       }
 
-      const { id, nome, avatar } = usuario;
-      const { ipInfo } = req;
-
-      const horario = dateFormat(new Date(), 'dd/mm/yyyy "às" hh:MM:ss');
+      const { id, name, avatar, is_administrator } = usuario;
 
       const refreshToken = await jwt.sign({ id }, authConfig.refreshSecret, {
         expiresIn: authConfig.refreshExpires,
@@ -78,19 +81,19 @@ class SessionController {
         refreshExpiracao.getHours() + process.env.AUTH_REFRESH_EXPIRES_AUX * 24
       );
 
-      await UsersTokens.create({
-        user_id: id,
+      await usuario.update({
         refresh_token: refreshToken,
-        expires_date: refreshExpiracao,
+        token_expires_date: refreshExpiracao,
       });
 
-      // await LogsAccounts.create({
-      //   user_id: usuario.id,
-      //   ip:
-      //     req.header('x-forwarded-for') ||
-      //     req.connection.remoteAddress ||
-      //     req.ip,
-      // });
+      await UsersSessionLogs.create({
+        user_id: usuario.id,
+        ip:
+          req.header('x-forwarded-for') ||
+          req.connection.remoteAddress ||
+          req.ip ||
+          'Não Informado',
+      });
 
       // await Queue.add(NewSessionMail.key, {
       //   usuario,
@@ -101,21 +104,23 @@ class SessionController {
       return res.json({
         user: {
           id,
-          nome,
+          name,
           email,
           avatar,
+          is_administrator,
         },
         token: jwt.sign({ id }, authConfig.secret, {
           expiresIn: authConfig.expiresIn,
         }),
         refresh_token: refreshToken,
-        responseRecaptcha,
+        // responseRecaptcha,
       });
     } catch (e) {
       return res.status(400).json({
         status: 400,
+        success: false,
         type: 'Session.Accounts.Unexpected.Create',
-        title: 'Ocorreu um erro durante a execução.',
+        error: 'Ocorreu um erro durante a execução.',
         message: 'Ocorreu um erro na autenticação.',
         details: e.message,
         instance: '/api/v1/auth/login',
@@ -147,7 +152,32 @@ class SessionController {
 
   async getAccountsLog(req, res) {
     try {
-      const logs = await LogsAccounts.findAll({ order: [['id', 'desc']] });
+      const logs = await UsersSessionLogs.findAll({
+        order: [['id', 'desc']],
+        include: [
+          {
+            model: Users,
+            as: 'user',
+            include: [
+              { model: Uploads, as: 'avatar' },
+              { model: Medals, as: 'medals' },
+            ],
+            attributes: {
+              exclude: [
+                'password_hash',
+                'email',
+                'level',
+                'refresh_token',
+                'token_expires_date',
+                'is_administrator',
+                'avatar_id',
+                'createdAt',
+                'updatedAt',
+              ],
+            },
+          },
+        ],
+      });
       if (!logs) {
         return res.status(404).json({
           status: 404,

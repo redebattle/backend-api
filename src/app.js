@@ -15,6 +15,8 @@ import routes from './routes';
 // import uploadImg from './config/uploads/uploadImg';
 // import uploadFile from './config/uploads/uploadFile';
 import './database';
+import './database/bungee.database';
+import './database/rankup.database';
 
 class App {
   constructor() {

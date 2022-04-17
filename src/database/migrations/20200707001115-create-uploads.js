@@ -7,7 +7,7 @@ module.exports = {
         autoIncrement: true,
         allowNull: false,
       },
-      nome: {
+      name: {
         type: Sequelize.STRING,
         allowNull: false,
       },
@@ -16,11 +16,11 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
-      tamanho: {
+      size: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      tipo: {
+      type: {
         type: Sequelize.STRING,
         allowNull: false,
       },

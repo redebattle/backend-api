@@ -5,6 +5,7 @@ class UserRoles extends Model {
     super.init(
       {},
       {
+        tableName: 'users_roles',
         sequelize,
       }
     );
@@ -12,11 +13,11 @@ class UserRoles extends Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.Usuario, { foreignKey: 'user_id', as: 'usuarios' });
+    this.belongsTo(models.Users, { foreignKey: 'user_id', as: 'user' });
     this.belongsTo(models.Roles, { foreignKey: 'role_id', as: 'role' });
-    this.belongsTo(models.Usuario, {
+    this.belongsTo(models.Users, {
       foreignKey: 'created_by',
-      as: 'autor',
+      as: 'author',
     });
   }
 }

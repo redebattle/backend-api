@@ -4,17 +4,17 @@ class FileController {
   async uploadImg(req, res) {
     try {
       const {
-        originalname: nome,
+        originalname: name,
         filename: path,
-        size: tamanho,
-        fieldname: tipo,
+        size,
+        fieldname: type,
       } = req.file;
 
       const file = await Uploads.create({
-        nome,
+        name,
         path,
-        tamanho,
-        tipo,
+        size,
+        type,
       });
 
       return res.json({ file });
@@ -28,17 +28,17 @@ class FileController {
   async uploadFile(req, res) {
     try {
       const {
-        originalname: nome,
+        originalname: name,
         filename: path,
-        size: tamanho,
-        fieldname: tipo,
+        size,
+        fieldname: type,
       } = req.file;
 
       const file = await Uploads.create({
-        nome,
+        name,
         path,
-        tamanho,
-        tipo,
+        size,
+        type,
       });
 
       return res.json({ file });

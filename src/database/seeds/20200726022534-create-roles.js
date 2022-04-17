@@ -1,22 +1,21 @@
 module.exports = {
-  up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert(
+  up: (queryInterface, Sequelize) =>
+    queryInterface.bulkInsert(
       'roles',
       [
         {
-          nome: 'CATEGORIA',
+          name: 'CATEGORIA',
           created_at: new Date(),
           updated_at: new Date(),
         },
         {
-          nome: 'AUTOR',
+          name: 'AUTOR',
           created_at: new Date(),
           updated_at: new Date(),
         },
       ],
       {}
-    );
-  },
+    ),
 
   down: (queryInterface, Sequelize) => {
     const { Op } = Sequelize;

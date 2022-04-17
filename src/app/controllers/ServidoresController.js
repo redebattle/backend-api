@@ -1,6 +1,6 @@
 import { Op } from 'sequelize';
 
-import Servidores from '../models/Servidores';
+import Servidores from '../models/Servers';
 
 class ServidoresController {
   async getAll(req, res) {

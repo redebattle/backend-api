@@ -1,4 +1,3 @@
-import Usuario from '../models/Usuario';
 
 export default async (req, res, next) => {
   try {

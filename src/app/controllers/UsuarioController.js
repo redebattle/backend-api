@@ -7,17 +7,17 @@ import CadastroMail from '../jobs/CadastroMail';
 import ForgotPasswordMail from '../jobs/ForgotPasswordMail';
 import ResendForgotPasswordMail from '../jobs/ResendForgotPasswordMail';
 import ResetPasswordEmail from '../jobs/ResetPasswordEmail';
-import PreUser from '../models/PreUsers';
+import Medals from '../models/Medals';
+import PreUser from '../models/PreRegistrations';
 import Roles from '../models/Roles';
-import Tokens from '../models/Tokens';
 import Uploads from '../models/Uploads';
-import UserRoles from '../models/UserRoles';
-import Usuario from '../models/Usuario';
+import Users from '../models/Users';
+import UsersTokens from '../models/UsersTokens';
 
 class UsuarioController {
   async createPreUser(req, res) {
     try {
-      const userExist = await Usuario.findOne({
+      const userExist = await Users.findOne({
         where: { email: req.body.email },
       });
 
@@ -56,18 +56,31 @@ class UsuarioController {
   async createUser(req, res) {
     try {
       const preUser = await PreUser.findOne({
-        where: { email: req.body.email, usado: false },
+        where: { email: req.body.email, used: false },
       });
 
       if (!preUser) {
-        return res
-          .status(400)
-          .json({ error: 'Você não possui um convite para se cadastrar.' });
+        return res.status(400).json({
+          status: 400,
+          sucess: false,
+          error: 'Ocorreu um erro durante a execução.',
+          message: 'Você não possui um convite para se cadastrar.',
+        });
       }
 
-      const userExist = await Usuario.findOne({
+      const userExist = await Users.findOne({
         where: { email: req.body.email },
       });
+
+      const usernameExist = await Users.findOne({
+        where: { username: req.body.username },
+      });
+
+      if (usernameExist) {
+        return res.status(400).json({
+          error: 'Já existe um usuário cadastrado com esse username.',
+        });
+      }
 
       if (userExist) {
         return res
@@ -75,14 +88,30 @@ class UsuarioController {
           .json({ error: 'Já existe um usuário cadastrado com esse email.' });
       }
 
-      if (req.body.nivel || req.body.nivel === 'ADMIN') {
+      if (
+        req.body.level ||
+        req.body.nivel === 'ADMIN' ||
+        req.body.is_administrator
+      ) {
         return res.status(401).json({ error: 'Você não pode fazer isso.' });
       }
 
-      const { id, nome, email } = await Usuario.create(req.body);
+      const { id, name, username, email } = await Users.create({
+        name: req.body.name,
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+        refresh_token: 'none',
+        token_expires_date: new Date(),
+        is_validated: false,
+        is_administrator: false,
+        is_email_notification_enable: false,
+        is_verified: false,
+        is_banned: false,
+      });
       await preUser.update({ usado: true });
 
-      return res.json({ id, nome, email });
+      return res.json({ id, name, username, email });
     } catch (e) {
       return res
         .status(400)
@@ -92,13 +121,13 @@ class UsuarioController {
 
   async updateUser(req, res) {
     try {
-      const { email, senhaatual } = req.body;
+      const { email, password } = req.body;
 
-      const user = await Usuario.findByPk(req.userId);
+      const user = await Users.findByPk(req.userId);
       // const avatarIsExist = await Uploads.findByPk(req.body.avatar_id);
 
       if (email !== user.email) {
-        const userExists = await Usuario.findOne({ where: { email } });
+        const userExists = await Users.findOne({ where: { email } });
 
         if (userExists) {
           return res
@@ -111,7 +140,7 @@ class UsuarioController {
       //   return res.status(401).json({ error: 'ID do avatar não encontrado.' });
       // }
 
-      if (senhaatual && !(await user.checkPassword(senhaatual))) {
+      if (password && !(await user.checkPassword(password))) {
         return res.status(401).json({ error: 'Senha atual incorreta.' });
       }
 
@@ -156,7 +185,7 @@ class UsuarioController {
 
       await user.update(req.body);
 
-      const { id, nome, avatar } = await Usuario.findByPk(req.userId, {
+      const { id, nome, avatar } = await Users.findByPk(req.userId, {
         include: [
           {
             model: Uploads,
@@ -181,32 +210,75 @@ class UsuarioController {
 
   async showUser(req, res) {
     try {
-      const usuario = await Usuario.findByPk(req.userId, {
+      const usuario = await Users.findByPk(req.userId, {
         attributes: {
-          exclude: ['avatar_id', 'senha_hash', 'createdAt', 'updatedAt', 'id'],
+          exclude: [
+            'avatar_id',
+            'password_hash',
+            'createdAt',
+            'updatedAt',
+            'refresh_token',
+            'token_expires_date',
+          ],
         },
         include: [
           {
             model: Uploads,
             as: 'avatar',
-            attributes: ['path', 'url', 'id', 'tipo'],
+            attributes: ['path', 'url', 'id', 'type'],
+          },
+          {
+            model: Medals,
+            as: 'medals',
+          },
+          {
+            model: Roles,
+            as: 'roles',
           },
         ],
       });
 
-      const roles = await UserRoles.findAndCountAll({
-        include: [{ model: Roles, as: 'role', attributes: ['nome', 'id'] }],
-        where: { user_id: req.userId },
-        attributes: [],
-      });
+      if (usuario === null) {
+        return res.status(404).json({ error: 'Usuário não encontrado.' });
+      }
 
-      return res.json({
-        usuario,
-        permissoes: roles,
-      });
+      return res.json(usuario);
     } catch (e) {
       return res.status(400).json({
         error: 'Ocorreu um erro na busca do usuário.',
+        message: e.message,
+      });
+    }
+  }
+
+  async getUsers(req, res) {
+    try {
+      const users = await Users.findAll({
+        attributes: {
+          exclude: [
+            'password_hash',
+            'email',
+            'level',
+            'refresh_token',
+            'token_expires_date',
+            'is_administrator',
+            'avatar_id',
+            'createdAt',
+            'updatedAt',
+          ],
+        },
+        include: [
+          {
+            model: Medals,
+            as: 'medals',
+          },
+          { model: Uploads, as: 'avatar' },
+        ],
+      });
+      return res.json(users);
+    } catch (e) {
+      return res.status(400).json({
+        error: 'Não foi possível listar os registros.',
         message: e.message,
       });
     }
@@ -216,7 +288,7 @@ class UsuarioController {
     const { email } = req.body;
 
     try {
-      const usuario = await Usuario.findOne({ where: { email } });
+      const usuario = await Users.findOne({ where: { email } });
 
       if (!usuario) {
         res.status(400).json({ error: 'Usuário não encontrado.' });
@@ -224,7 +296,7 @@ class UsuarioController {
 
       const userID = usuario.id;
 
-      const checkToken = await Tokens.findOne({
+      const checkToken = await UsersTokens.findOne({
         where: { user_id: userID, type: 'forgotpassword', used: false },
       });
 
@@ -236,7 +308,7 @@ class UsuarioController {
               'Já existe um pedido de recuperação para essa conta. Verifique seu email.',
           });
         }
-        await Tokens.destroy({ where: { id: checkToken.id } });
+        await UsersTokens.destroy({ where: { id: checkToken.id } });
       }
 
       const token = crypto.randomBytes(24).toString('HEX');
@@ -244,7 +316,7 @@ class UsuarioController {
       const expiracao = new Date();
       expiracao.setHours(expiracao.getHours() + 1);
 
-      await Tokens.create({
+      await UsersTokens.create({
         token,
         type: 'forgotpassword',
         user_id: userID,
@@ -271,11 +343,11 @@ class UsuarioController {
   }
 
   async resetPassword(req, res) {
-    const { email, token, senha } = req.body;
+    const { email, token, password } = req.body;
 
     try {
-      const user = await Usuario.findOne({ where: { email } });
-      const getToken = await Tokens.findOne({
+      const user = await Users.findOne({ where: { email } });
+      const getToken = await UsersTokens.findOne({
         where: { token, type: 'forgotpassword', used: false },
       });
 
@@ -287,7 +359,7 @@ class UsuarioController {
         return res.status(400).json({ error: 'Token inserido é inválido.' });
       }
 
-      if (await user.checkPassword(req.body.senha)) {
+      if (await user.checkPassword(req.body.password)) {
         return res
           .status(401)
           .json({ error: 'Você não pode utilizar a mesma senha.' });
@@ -299,7 +371,7 @@ class UsuarioController {
         return res.status(400).json({ error: 'Token expirado.' });
       }
 
-      user.senha = senha;
+      user.password = password;
       await user.save();
 
       getToken.used = true;
@@ -320,7 +392,7 @@ class UsuarioController {
 
   async resendEmailForgotPassword(req, res) {
     const { email } = req.body;
-    const user = await Usuario.findOne({ where: { email } });
+    const user = await Users.findOne({ where: { email } });
     const now = new Date();
 
     try {
@@ -328,7 +400,7 @@ class UsuarioController {
         return res.status(400).json({ error: 'Usuário não encontrado.' });
       }
 
-      const getToken = await Tokens.findOne({
+      const getToken = await UsersTokens.findOne({
         where: { user_id: user.id, type: 'forgotpassword', used: false },
       });
 
@@ -357,30 +429,6 @@ class UsuarioController {
       return res
         .status(400)
         .json({ error: 'Ocorreu um erro.', message: e.message });
-    }
-  }
-
-  async getUsers(req, res) {
-    try {
-      const users = await Usuario.findAll({
-        attributes: {
-          exclude: [
-            'senha_hash',
-            'email',
-            'nivel',
-            'avatar_id',
-            'createdAt',
-            'updatedAt',
-            'minotar',
-          ],
-        },
-      });
-      return res.json(users);
-    } catch (e) {
-      return res.status(400).json({
-        error: 'Não foi possível listar os registros.',
-        message: e.message,
-      });
     }
   }
 }

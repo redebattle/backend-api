@@ -4,14 +4,14 @@ class Uploads extends Model {
   static init(sequelize) {
     super.init(
       {
-        nome: Sequelize.STRING,
+        name: Sequelize.STRING,
         path: Sequelize.STRING,
-        tamanho: Sequelize.NUMBER,
-        tipo: Sequelize.STRING,
+        size: Sequelize.NUMBER,
+        type: Sequelize.STRING,
         url: {
           type: Sequelize.VIRTUAL,
           get() {
-            return `${process.env.APP_URL}/uploads/${this.tipo}/${this.path}`;
+            return `${process.env.APP_URL}/uploads/${this.type}/${this.path}`;
           },
         },
       },

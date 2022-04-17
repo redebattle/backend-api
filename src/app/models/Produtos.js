@@ -18,7 +18,7 @@ class Produtos extends Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.Servidores, {
+    this.belongsTo(models.Servers, {
       foreignKey: 'servidor_id',
       as: 'servidor',
     });

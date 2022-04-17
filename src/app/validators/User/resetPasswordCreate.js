@@ -5,9 +5,9 @@ export default async (req, res, next) => {
     const schema = Yup.object().shape({
       email: Yup.string().email().required('O email é obrigatório.'),
       token: Yup.string().required('O token é obrigatório.'),
-      senha: Yup.string().min(6).required('A senha é obrigatória.'),
-      confirmarsenha: Yup.string().when('senha', (senha, field) =>
-        senha ? field.required().oneOf([Yup.ref('senha')]) : field
+      password: Yup.string().min(6).required('A senha é obrigatória.'),
+      confirm_password: Yup.string().when('password', (password, field) =>
+        password ? field.required().oneOf([Yup.ref('password')]) : field
       ),
     });
 

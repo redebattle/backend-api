@@ -1,5 +1,5 @@
 import Cargo from '../models/Cargos';
-import Changelog from '../models/Changelogs';
+import Changelog from '../models/ChangelogPosts';
 import Equipes from '../models/Equipes';
 import Equipe from '../models/Staffs';
 

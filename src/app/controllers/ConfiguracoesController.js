@@ -4,7 +4,7 @@ class ConfiguracoesController {
   async checkManutencao(req, res) {
     try {
       const manutencao = await Configuracoes.findOne({
-        where: { manutencao: true },
+        where: { maintenance_mode: true },
       });
       if (!manutencao) {
         return res.json(false);
@@ -22,7 +22,7 @@ class ConfiguracoesController {
     const { status } = req.body;
     try {
       const getConfig = await Configuracoes.findByPk(1);
-      await getConfig.update({ manutencao: status });
+      await getConfig.update({ maintenance_mode: status });
       return res.json({ getConfig });
     } catch (e) {
       return res
@@ -34,7 +34,7 @@ class ConfiguracoesController {
   async getManutencaoMensagem(req, res) {
     try {
       const mensagem = await Configuracoes.findByPk(1);
-      return res.json({ message: mensagem.manutencao_mensagem });
+      return res.json({ maintenance_message: mensagem.manutencao_mensagem });
     } catch (e) {
       return res.status(400).json({
         error: 'Ocorreu um erro ao obter mensagem de manutenção.',
@@ -48,7 +48,7 @@ class ConfiguracoesController {
     try {
       const getConfig = await Configuracoes.findByPk(1);
 
-      await getConfig.update({ manutencao_mensagem: mensagem });
+      await getConfig.update({ maintenance_message: mensagem });
 
       return res.json(getConfig);
     } catch (e) {

@@ -1,6 +1,6 @@
 import Roles from '../models/Roles';
 import UserRoles from '../models/UserRoles';
-import Usuario from '../models/Usuario';
+import Usuario from '../models/Users';
 
 export default async (req, res, next) => {
   try {

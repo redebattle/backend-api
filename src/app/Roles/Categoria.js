@@ -1,10 +1,10 @@
 import Roles from '../models/Roles';
 import UserRoles from '../models/UserRoles';
-import Usuario from '../models/Usuario';
+import Users from '../models/Users';
 
 export default async (req, res, next) => {
   try {
-    const user = await Usuario.findByPk(req.userId);
+    const user = await Users.findByPk(req.userId);
     const roles = await Roles.findOne({ where: { nome: 'CATEGORIA' } });
     const userRoles = await UserRoles.findOne({
       where: { role_id: roles.id },

@@ -1,11 +1,13 @@
-import { Model, Sequelize } from 'sequelize';
+import Sequelize, { Model } from 'sequelize';
 
 class UsersTokens extends Model {
   static init(sequelize) {
     super.init(
       {
-        refresh_token: Sequelize.STRING,
-        expires_date: Sequelize.DATE,
+        token: Sequelize.STRING,
+        type: Sequelize.STRING,
+        expired_at: Sequelize.DATE,
+        used: Sequelize.BOOLEAN,
       },
       {
         sequelize,
@@ -15,7 +17,7 @@ class UsersTokens extends Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.Usuario, { foreignKey: 'user_id', as: 'usuarios' });
+    this.belongsTo(models.Users, { foreignKey: 'user_id', as: 'user' });
   }
 }
 

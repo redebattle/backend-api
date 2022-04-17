@@ -1,7 +1,7 @@
 import Configuracoes from '../models/Configuracoes';
 import Roles from '../models/Roles';
 import UserRoles from '../models/UserRoles';
-import Usuario from '../models/Usuario';
+import Usuario from '../models/Users';
 
 export default async (req, res, next) => {
   try {
@@ -13,7 +13,7 @@ export default async (req, res, next) => {
 
     const config = await Configuracoes.findOne({
       where: {
-        manutencao: true,
+        maintenance_mode: true,
       },
     });
 

@@ -3,6 +3,7 @@ import BruteRedis from 'express-brute-redis';
 
 import nLoginController from '../../app/controllers/nLoginController';
 import SessionController from '../../app/controllers/SessionController';
+import SessionMinecraftController from '../../app/controllers/SessionMinecraftController';
 import UsuarioController from '../../app/controllers/UsuarioController';
 import validateSessionCreate from '../../app/validators/Session/SessionCreate';
 import validateForgotPasswordCreate from '../../app/validators/User/forgotPasswordCreate';
@@ -52,10 +53,15 @@ export default (routes, auth) => {
     SessionController.createSession
   );
 
+  routes.post(
+    '/api/v1/minecraft/auth/login',
+    SessionMinecraftController.createSession
+  );
+
   // Routes Private
 
   routes.post(
-    '/api/v1/auth/pre-cadastro',
+    '/api/v1/auth/register/pre',
     auth,
     validatePreUser,
     UsuarioController.createPreUser

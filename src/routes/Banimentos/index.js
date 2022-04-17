@@ -1,5 +1,5 @@
 // Controller
-import BanimentosController from '../../app/controllers/BanimentosController';
+import BanimentosController from '../../app/controllers/bungee.controllers/BanimentosController';
 
 // Validação
 // import NOME from '../../app/validators/NOME/NOME';
@@ -15,13 +15,12 @@ export default (routes, auth) => {
   // Routes Private
 
   routes.get('/api/v1/banimentos/all', BanimentosController.getall);
+  routes.get('/api/v1/banimentos/id/:id', BanimentosController.getByID);
+
   routes.get(
     '/api/v1/banimentos/estatisticas',
     BanimentosController.getStatistic
   );
-  routes.get(
-    '/api/v1/banimentos/:username',
-    auth,
-    BanimentosController.checkBan
-  );
+
+  routes.get('/api/v1/banimentos/check/:user', BanimentosController.checkBan);
 };

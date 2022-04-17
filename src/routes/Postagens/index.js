@@ -1,5 +1,5 @@
 // Controller
-import PostagensController from '../../app/controllers/PostagensController';
+import PostArticleController from '../../app/controllers/PostArticleController';
 
 // Validação
 import postagensRoles from '../../app/Roles/Postagens';
@@ -10,61 +10,60 @@ import PostagensCreate from '../../app/validators/Postagens/PostagensCreate';
 export default (routes, auth) => {
   // Routes Public
 
-  routes.get('/api/v1/postagens/all', PostagensController.getAllIndex);
-  routes.get('/api/v1/postagens/list', PostagensController.getPaginationIndex);
-  routes.get('/api/v1/postagens/:id', PostagensController.getIdIndex);
-  routes.get('/api/v1/postagens', PostagensController.searchIndex);
-  routes.get('/api/v1/postagens/slug/:slug', PostagensController.getSlugIndex);
   routes.get(
-    '/api/v1/postagens/autor/:autor',
-    PostagensController.getAuthroPosts
+    '/api/v1/postagens/list',
+    PostArticleController.getPaginationIndex
+  );
+
+  routes.get(
+    '/api/v1/postagens/slug/:slug',
+    PostArticleController.getSlugIndex
+  );
+
+  routes.get(
+    '/api/v1/post/author/:author',
+    PostArticleController.getAuthorPosts
   );
 
   // Routes Private
 
-  routes.get(
-    '/api/v1/postagens/admin/all',
-    auth,
-    PostagensController.getAllAdmin
-  );
+  // routes.get(
+  //   '/api/v1/postagens/admin/all',
+  //   auth,
+  //   PostagensController.getAllAdmin
+  // );
 
-  routes.get(
-    '/api/v1/postagens/admin/list',
-    auth,
-    PostagensController.getPaginationAdmin
-  );
-
-  routes.get(
-    '/api/v1/postagens/admin/:id',
-    auth,
-    PostagensController.getIdAdmin
-  );
+  // routes.get(
+  //   '/api/v1/postagens/admin/list',
+  //   auth,
+  //   PostagensController.getPaginationAdmin
+  // );
 
   routes.post(
-    '/api/v1/postagens',
+    '/api/v1/post/article',
     auth,
     // postagensRoles,
     PostagensCreate,
-    PostagensController.createPost
+    PostArticleController.createPost
   );
 
-  routes.delete(
-    '/api/v1/postagens/:id',
-    auth,
-    // postagensRoles,
-    PostagensController.deletePost
-  );
+  // routes.delete(
+  //   '/api/v1/postagens/:id',
+  //   auth,
+  //   // postagensRoles,
+  //   PostagensController.deletePost
+  // );
 
-  routes.put(
-    '/api/v1/postagens/:id',
-    auth,
-    // postagensRoles,
-    PostagensController.editPost
-  );
+  // routes.put(
+  //   '/api/v1/postagens/:id',
+  //   auth,
+  //   // postagensRoles,
+  //   PostagensController.editPost
+  // );
 
-  routes.put(
-    '/api/v1/postagens/changeStatus/:id',
-    auth,
-    PostagensController.changeStatus
-  );
+  // routes.put(
+  //   '/api/v1/postagens/changeStatus/:id',
+  //   auth,
+  //   PostagensController.changeStatus
+  // );
 };

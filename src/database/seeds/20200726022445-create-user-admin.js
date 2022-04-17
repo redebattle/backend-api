@@ -3,13 +3,21 @@ const bcrypt = require('bcryptjs');
 module.exports = {
   up: (QueryInterface) =>
     QueryInterface.bulkInsert(
-      'usuarios',
+      'users',
       [
         {
-          nome: 'Administrador',
-          email: 'admin@cubebox.com.br',
-          senha_hash: bcrypt.hashSync('123456789', 8),
-          nivel: 'ADMIN',
+          name: 'Administrador',
+          username: 'Administrador',
+          email: 'admin@redebattle.com.br',
+          password_hash: bcrypt.hashSync('123456789', 8),
+          refresh_token: 'none',
+          token_expires_date: new Date(),
+          level: 'ADMIN',
+          is_administrator: true,
+          is_email_notification_enable: true,
+          is_verified: true,
+          is_validated: true,
+          is_banned: false,
           created_at: new Date(),
           updated_at: new Date(),
         },
@@ -20,8 +28,8 @@ module.exports = {
   down: (queryInterface, Sequelize) => {
     const { Op } = Sequelize;
     return queryInterface.bulkDelete(
-      'usuarios',
-      { email: { [Op.in]: ['admin@cubebox.com.br'] } },
+      'users',
+      { email: { [Op.in]: ['admin@redebattle.com.br'] } },
       {}
     );
   },
